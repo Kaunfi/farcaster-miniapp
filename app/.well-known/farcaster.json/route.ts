@@ -10,7 +10,7 @@ export async function GET() {
   },
   "frame": {
     "version": "1",
-    "name": "Youriii39 Farcaster MiniApp",
+    "name": "Youriii Farcaster MiniApp",
     "iconUrl": "https://farcaster-miniapp-one.vercel.app//images/icon.png",
     "homeUrl": "https://farcaster-miniapp-one.vercel.app/",
     "imageUrl": "https://farcaster-miniapp-one.vercel.app//images/feed.png",
