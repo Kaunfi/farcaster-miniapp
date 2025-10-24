@@ -9,7 +9,7 @@ const frame = {
     title: 'Launch Template',
     action: {
       type: 'launch_frame',
-      name: 'Trankil Farcaster MiniApp',
+      name: 'Youriii Farcaster MiniApp',
       url: APP_URL,
       splashImageUrl: `${APP_URL}/images/splash.png`,
       splashBackgroundColor: '#f7f7f7',
