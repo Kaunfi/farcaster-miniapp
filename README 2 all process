@@ -1,0 +1,134 @@
+bonjour à tous
+ voici un guide pour créer une mini apps sur Farcaster 
+
+préambule : Je ne suis pas codeur j'ai bidouillé avec ChatGpt int
+
+objectifs : 
+- gagner des points sur Talent Protocol en ayant des interactions de différents wallets sur le contract créé
+- se positionner comme un dévellopeur sur base en vue d'un potentiel airdrop
+
+Introduction : 
+Je me suis basé sur un template fournis par Monad pour créer sa minidapps sur Farcaster
+j'ai volontairement viré des fonctions inutiles
+j'ai modifié le design, mais il reste des traces du mot Monad (on s'en fout un peu mais bon)
+
+Ce que vous aurez besoin : 
+
+- un compte github (gratuit) https://github.com/
+- un compte vercel (gratuit) https://vercel.com/
+- un compte farcaster (evidemment)
+- savoir publier un contract avec Remix https://remix.live/
+
+pour me remercier jaimerais bien que 
+- vous mettiez une étoile sur le repositery et que vous le forkiez
+- vous fassiez une transaction à partir de mon app https://farcaster.xyz/trankil.eth/0x6d2ede72
+
+Ce que l'appli fait : 
+- vous répondez oui ou non à une question et vous interragissez avec un contract sur base mainet
+- pas d'affichage des résultats du sondage
+
+
+Voici le lien vers le fichier d'aide en français : 
+https://github.com/trankil123/farcaster-miniapp-template/blob/main/README%202%20all%20process
+
+et le repository à fork 
+https://github.com/trankil123/farcaster-miniapp-template/
+
+have fun 
+
+ps : comme je ne suis pas codeur, j'essayerais de répondre à vos questions dans la limite de mes connaissances
+
+
+
+etape 1 :  cloner ce repository
+étape 2 : créer un contract avec remix  sur base mainet 
+avec ce code 
+
+/ SPDX-License-Identifier: MIT
+pragma solidity ^0.8.20;
+
+/// @title SimplePayable (standalone, no imports)
+/// @notice Reçoit des paiements avec message et permet à l'owner de retirer.
+/// @dev Inclut un garde anti-réentrance minimaliste, sans OpenZeppelin.
+contract SimplePayable {
+    address public immutable owner;
+
+    // Garde anti-réentrance simple
+    bool private _entered;
+    modifier nonReentrant() {
+        require(!_entered, "Reentrancy");
+        entered = true;
+        ;
+        _entered = false;
+    }
+
+    event Received(address indexed sender, uint256 amount, string message);
+    event Withdrawn(address indexed to, uint256 amount);
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    /// @notice Envoie un petit montant avec un message
+    function pay(string calldata _message) external payable {
+        require(msg.value > 0, "Send some ETH");
+        emit Received(msg.sender, msg.value, _message);
+    }
+
+    /// @notice Retire l’intégralité du solde du contrat vers _to (owner uniquement)
+    function withdraw(address payable _to) external nonReentrant {
+        require(msg.sender == owner, "Only owner can withdraw");
+        uint256 balance = address(this).balance;
+        require(balance > 0, "No ETH to withdraw");
+
+        // Envoi du solde. Pas d’état après l’appel externe, garde anti-réentrance active.
+        (bool success, ) = _to.call{value: balance}("");
+        require(success, "Withdraw failed");
+
+        emit Withdrawn(_to, balance);
+    }
+
+    /// @notice Accepte les transferts directs
+    receive() external payable {
+        emit Received(msg.sender, msg.value, "Direct ETH transfer");
+    }
+}
+
+
+et le verifier ici https://basescan.org/verifyContract
+
+ensuite dans components/Home/WalletActions.tsx
+
+mettre l'adresse de votre contract ci dessous à la place de 0xCdcC45169fCbF6cEcC1931f3415978E3a6553ACd  
+   // Adresse du contrat déployé
+  const contractAddress = '0xCdcC45169fCbF6cEcC1931f3415978E3a6553ACd'
+
+
+dans components/Home/FarcasterActions.tsx   changer le fid:xxx par votre ID que vous pouvez trouver dans votre profil farcaster
+
+
+  etape 3
+  deployer le git sur vercel (gratuit) https://vercel.com/
+  récupèrer l'adresse de l'appli : exemple : farcaster-miniapp-template-ebon.vercel.app
+  la modifier dans .env.local
+
+  suivre le tuto https://docs.monad.xyz/templates/farcaster-miniapp/publishing-miniapp dans la partie Generating accountAssociation using the Farcaster Mobile App.
+  et remplacée dans app/.well-known/farcaster.json/route.ts 
+   accountAssociation: {
+    "header": "eyJmaWQiOjMyODg1NSwidHlwZSI6ImF1dGgiLCJrZXkiOiIweERCOTczZjliNWI0MDhFMkZFNjNFQ2UzNjBEYjFjODU5YjQ5NDFFRTcifQ",
+    "payload": "eyJkb21haW4iOiJmYXJjYXN0ZXItbWluaWFwcC10ZW1wbGF0ZS1lYm9uLnZlcmNlbC5hcHAifQ",
+    "signature": "1bH6yx1yjJgF2olNGcmhAgsbS229TmERlvHsktnOqA88aDMQAPm+WSFEgqfIFtcRFIUsewD5Of72EVNKufxX3Bs="
+  },
+  par vos données
+
+  eet voilà une appli farcaster validée pour un possible airdrop base dévellopeur 
+
+  
+  
+sources utilisées :
+
+https://docs.monad.xyz/templates/farcaster-miniapp/publishing-miniapp
+https://github.com/monad-developers/monad-miniapp-template
+https://miniapps.farcaster.xyz/docs/guides/wallets
+https://vercel.com/
+https://github.com/
